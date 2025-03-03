@@ -33,7 +33,9 @@ import React, { useState, useEffect, useRef } from "react";
 const Navbar = () => {
 	const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 	const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
+	const [hoveredElement, setHoveredElement] = useState<string | null>(null);
 	const navbarRef = useRef<HTMLDivElement>(null);
+	const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
 	const toggleDropdown = (dropdown: string) => {
 		setOpenDropdown(openDropdown === dropdown ? null : dropdown);
@@ -42,6 +44,40 @@ const Navbar = () => {
 	const toggleMobileMenu = () => {
 		setMobileMenuOpen(!mobileMenuOpen);
 	};
+
+	const handleMouseEnter = (dropdown: string) => {
+		// Clear any existing timeout to prevent closing
+		if (timeoutRef.current) {
+			clearTimeout(timeoutRef.current);
+			timeoutRef.current = null;
+		}
+		setHoveredElement(dropdown);
+	};
+
+	const handleMouseLeave = () => {
+		// Set a timeout before closing the dropdown
+		timeoutRef.current = setTimeout(() => {
+			setHoveredElement(null);
+		}, 600); // 600ms delay
+	};
+
+	// Clear timeout on unmount
+	useEffect(() => {
+		return () => {
+			if (timeoutRef.current) {
+				clearTimeout(timeoutRef.current);
+			}
+		};
+	}, []);
+
+	// Handle dropdown visibility based on hover state
+	useEffect(() => {
+		if (hoveredElement) {
+			setOpenDropdown(hoveredElement);
+		} else {
+			setOpenDropdown(null);
+		}
+	}, [hoveredElement]);
 
 	// Close dropdowns when clicking outside
 	useEffect(() => {
@@ -96,10 +132,12 @@ const Navbar = () => {
 							type="button"
 							className={`flex items-center font-medium border-b-2 ${openDropdown === "product" ? "text-blue-600 border-blue-600" : "text-gray-700 hover:text-gray-900 border-transparent"}`}
 							onClick={() => toggleDropdown("product")}
+							onMouseEnter={() => handleMouseEnter("product")}
+							onMouseLeave={handleMouseLeave}
 						>
 							Product
 							<svg
-								className="ml-1 h-4 w-4"
+								className={`ml-1 h-4 w-4 transform transition-transform duration-200 ${openDropdown === "product" ? "rotate-180" : "group-hover:rotate-180"}`}
 								fill="none"
 								stroke="currentColor"
 								viewBox="0 0 24 24"
@@ -120,10 +158,12 @@ const Navbar = () => {
 							type="button"
 							className={`flex items-center font-medium border-b-2 ${openDropdown === "solutions" ? "text-blue-600 border-blue-600" : "text-gray-700 hover:text-gray-900 border-transparent"}`}
 							onClick={() => toggleDropdown("solutions")}
+							onMouseEnter={() => handleMouseEnter("solutions")}
+							onMouseLeave={handleMouseLeave}
 						>
 							Solutions
 							<svg
-								className="ml-1 h-4 w-4"
+								className={`ml-1 h-4 w-4 transform transition-transform duration-200 ${openDropdown === "solutions" ? "rotate-180" : "group-hover:rotate-180"}`}
 								fill="none"
 								stroke="currentColor"
 								viewBox="0 0 24 24"
@@ -151,10 +191,12 @@ const Navbar = () => {
 							type="button"
 							className={`flex items-center font-medium border-b-2 ${openDropdown === "resources" ? "text-blue-600 border-blue-600" : "text-gray-700 hover:text-gray-900 border-transparent"}`}
 							onClick={() => toggleDropdown("resources")}
+							onMouseEnter={() => handleMouseEnter("resources")}
+							onMouseLeave={handleMouseLeave}
 						>
 							Resources
 							<svg
-								className="ml-1 h-4 w-4"
+								className={`ml-1 h-4 w-4 transform transition-transform duration-200 ${openDropdown === "resources" ? "rotate-180" : "group-hover:rotate-180"}`}
 								fill="none"
 								stroke="currentColor"
 								viewBox="0 0 24 24"
@@ -275,37 +317,91 @@ const Navbar = () => {
 									<div className="mt-4 pl-4 space-y-4">
 										<div className="flex items-center space-x-3">
 											<Layout className="h-5 w-5 text-gray-700" />
-											<span className="text-gray-800">Landing pages</span>
+											<span className="text-gray-800">
+												<Link
+													href="/product/landing-pages"
+													className="hover:text-blue-600"
+												>
+													Landing pages
+												</Link>
+											</span>
 										</div>
 										<div className="flex items-center space-x-3">
 											<PenTool className="h-5 w-5 text-gray-700" />
-											<span className="text-gray-800">AI copywriting</span>
+											<span className="text-gray-800">
+												<Link
+													href="/product/ai-copywriting"
+													className="hover:text-blue-600"
+												>
+													AI copywriting
+												</Link>
+											</span>
 										</div>
 										<div className="flex items-center space-x-3">
 											<BarChart2 className="h-5 w-5 text-gray-700" />
-											<span className="text-gray-800">A/B testing</span>
+											<span className="text-gray-800">
+												<Link
+													href="/product/ab-testing"
+													className="hover:text-blue-600"
+												>
+													A/B testing
+												</Link>
+											</span>
 										</div>
 										<div className="flex items-center space-x-3">
 											<Database className="h-5 w-5 text-gray-700" />
-											<span className="text-gray-800">Integrations</span>
+											<span className="text-gray-800">
+												<Link
+													href="/product/integrations"
+													className="hover:text-blue-600"
+												>
+													Integrations
+												</Link>
+											</span>
 										</div>
 										<div className="flex items-center space-x-3">
 											<Target className="h-5 w-5 text-gray-700" />
-											<span className="text-gray-800">AI optimization</span>
+											<span className="text-gray-800">
+												<Link
+													href="/product/ai-optimization"
+													className="hover:text-blue-600"
+												>
+													AI optimization
+												</Link>
+											</span>
 										</div>
 										<div className="flex items-center space-x-3">
 											<Layers className="h-5 w-5 text-gray-700" />
-											<span className="text-gray-800">Templates</span>
+											<span className="text-gray-800">
+												<Link
+													href="/product/templates"
+													className="hover:text-blue-600"
+												>
+													Templates
+												</Link>
+											</span>
 										</div>
 										<div className="flex items-center space-x-3">
 											<MessageSquare className="h-5 w-5 text-gray-700" />
 											<span className="text-gray-800">
-												Popups and sticky bars
+												<Link
+													href="/product/popups-sticky-bars"
+													className="hover:text-blue-600"
+												>
+													Popups and sticky bars
+												</Link>
 											</span>
 										</div>
 										<div className="flex items-center space-x-3">
 											<Settings className="h-5 w-5 text-gray-700" />
-											<span className="text-gray-800">Features</span>
+											<span className="text-gray-800">
+												<Link
+													href="/product/features"
+													className="hover:text-blue-600"
+												>
+													Features
+												</Link>
+											</span>
 										</div>
 									</div>
 								)}
@@ -343,20 +439,46 @@ const Navbar = () => {
 											<div className="space-y-3 pl-2">
 												<div className="flex items-center space-x-3">
 													<Megaphone className="h-5 w-5 text-gray-700" />
-													<span className="text-gray-800">Agencies</span>
+													<span className="text-gray-800">
+														<Link
+															href="/solutions/agencies"
+															className="hover:text-blue-600"
+														>
+															Agencies
+														</Link>
+													</span>
 												</div>
 												<div className="flex items-center space-x-3">
 													<ShoppingCart className="h-5 w-5 text-gray-700" />
-													<span className="text-gray-800">Ecommerce</span>
+													<span className="text-gray-800">
+														<Link
+															href="/solutions/ecommerce"
+															className="hover:text-blue-600"
+														>
+															Ecommerce
+														</Link>
+													</span>
 												</div>
 												<div className="flex items-center space-x-3">
 													<Cloud className="h-5 w-5 text-gray-700" />
-													<span className="text-gray-800">SaaS</span>
+													<span className="text-gray-800">
+														<Link
+															href="/solutions/saas"
+															className="hover:text-blue-600"
+														>
+															SaaS
+														</Link>
+													</span>
 												</div>
 												<div className="flex items-center space-x-3">
 													<Store className="h-5 w-5 text-gray-700" />
 													<span className="text-gray-800">
-														Small businesses
+														<Link
+															href="/solutions/small-businesses"
+															className="hover:text-blue-600"
+														>
+															Small businesses
+														</Link>
 													</span>
 												</div>
 											</div>
@@ -369,15 +491,36 @@ const Navbar = () => {
 											<div className="space-y-3 pl-2">
 												<div className="flex items-center space-x-3">
 													<MousePointer className="h-5 w-5 text-gray-700" />
-													<span className="text-gray-800">PPC</span>
+													<span className="text-gray-800">
+														<Link
+															href="/solutions/ppc"
+															className="hover:text-blue-600"
+														>
+															PPC
+														</Link>
+													</span>
 												</div>
 												<div className="flex items-center space-x-3">
 													<MessageCircle className="h-5 w-5 text-gray-700" />
-													<span className="text-gray-800">Social ads</span>
+													<span className="text-gray-800">
+														<Link
+															href="/solutions/social-ads"
+															className="hover:text-blue-600"
+														>
+															Social ads
+														</Link>
+													</span>
 												</div>
 												<div className="flex items-center space-x-3">
 													<Mail className="h-5 w-5 text-gray-700" />
-													<span className="text-gray-800">Email marketing</span>
+													<span className="text-gray-800">
+														<Link
+															href="/solutions/email-marketing"
+															className="hover:text-blue-600"
+														>
+															Email marketing
+														</Link>
+													</span>
 												</div>
 											</div>
 										</div>
@@ -426,13 +569,28 @@ const Navbar = () => {
 											</h3>
 											<div className="space-y-3 pl-2">
 												<div className="text-gray-800">
-													What is a landing page?
+													<Link
+														href="/resources/what-is-landing-page"
+														className="hover:text-blue-600"
+													>
+														What is a landing page?
+													</Link>
 												</div>
 												<div className="text-gray-800">
-													Landing page examples
+													<Link
+														href="/resources/landing-page-examples"
+														className="hover:text-blue-600"
+													>
+														Landing page examples
+													</Link>
 												</div>
 												<div className="text-gray-800">
-													Conversion benchmark report
+													<Link
+														href="/resources/conversion-benchmark-report"
+														className="hover:text-blue-600"
+													>
+														Conversion benchmark report
+													</Link>
 												</div>
 											</div>
 										</div>
@@ -444,17 +602,36 @@ const Navbar = () => {
 											<div className="space-y-3 pl-2">
 												<div className="flex items-center space-x-3">
 													<HelpCircle className="h-5 w-5 text-gray-700" />
-													<span className="text-gray-800">Help center</span>
+													<span className="text-gray-800">
+														<Link
+															href="/help-center"
+															className="hover:text-blue-600"
+														>
+															Help center
+														</Link>
+													</span>
 												</div>
 												<div className="flex items-center space-x-3">
 													<Headphones className="h-5 w-5 text-gray-700" />
 													<span className="text-gray-800">
-														Unprompted podcast
+														<Link
+															href="/resources/unprompted-podcast"
+															className="hover:text-blue-600"
+														>
+															Unprompted podcast
+														</Link>
 													</span>
 												</div>
 												<div className="flex items-center space-x-3">
 													<Video className="h-5 w-5 text-gray-700" />
-													<span className="text-gray-800">Video library</span>
+													<span className="text-gray-800">
+														<Link
+															href="/resources/video-library"
+															className="hover:text-blue-600"
+														>
+															Video library
+														</Link>
+													</span>
 												</div>
 											</div>
 										</div>
@@ -500,7 +677,11 @@ const Navbar = () => {
 				<>
 					{/* Product Dropdown */}
 					{openDropdown === "product" && (
-						<div className="absolute left-0 right-0 mt-1 bg-white shadow-lg z-50 py-8 px-6 border-t border-gray-100 hidden lg:block">
+						<div
+							className="absolute left-0 right-0 mt-1 bg-white shadow-lg z-50 py-8 px-6 border-t border-gray-100 hidden lg:block"
+							onMouseEnter={() => handleMouseEnter("product")}
+							onMouseLeave={handleMouseLeave}
+						>
 							<div className="max-w-7xl mx-auto grid grid-cols-12 gap-8">
 								<div className="col-span-8 grid grid-cols-2 gap-x-8 gap-y-10">
 									<div className="flex space-x-3">
@@ -509,7 +690,12 @@ const Navbar = () => {
 										</div>
 										<div>
 											<h3 className="font-medium text-gray-900">
-												Landing pages
+												<Link
+													href="/product/landing-pages"
+													className="hover:text-blue-600"
+												>
+													Landing pages
+												</Link>
 											</h3>
 											<p className="mt-1 text-sm text-gray-600">
 												Build pages with smart features that get more sales and
@@ -524,7 +710,12 @@ const Navbar = () => {
 										</div>
 										<div>
 											<h3 className="font-medium text-gray-900">
-												AI copywriting
+												<Link
+													href="/product/ai-copywriting"
+													className="hover:text-blue-600"
+												>
+													AI copywriting
+												</Link>
 											</h3>
 											<p className="mt-1 text-sm text-gray-600">
 												Instantly generate copy for your pages, ads, emails, and
@@ -538,7 +729,14 @@ const Navbar = () => {
 											<BarChart2 className="h-6 w-6 text-gray-700" />
 										</div>
 										<div>
-											<h3 className="font-medium text-gray-900">A/B testing</h3>
+											<h3 className="font-medium text-gray-900">
+												<Link
+													href="/product/ab-testing"
+													className="hover:text-blue-600"
+												>
+													A/B testing
+												</Link>
+											</h3>
 											<p className="mt-1 text-sm text-gray-600">
 												A/B test your landing pages without a designer,
 												developer, or deep pockets.
@@ -552,7 +750,12 @@ const Navbar = () => {
 										</div>
 										<div>
 											<h3 className="font-medium text-gray-900">
-												Integrations
+												<Link
+													href="/product/integrations"
+													className="hover:text-blue-600"
+												>
+													Integrations
+												</Link>
 											</h3>
 											<p className="mt-1 text-sm text-gray-600">
 												Connect your favorite marketing tools and add extra
@@ -567,7 +770,12 @@ const Navbar = () => {
 										</div>
 										<div>
 											<h3 className="font-medium text-gray-900">
-												AI optimization
+												<Link
+													href="/product/ai-optimization"
+													className="hover:text-blue-600"
+												>
+													AI optimization
+												</Link>
 											</h3>
 											<p className="mt-1 text-sm text-gray-600">
 												Automatically send visitors to their best-match landing
@@ -581,7 +789,14 @@ const Navbar = () => {
 											<Layers className="h-6 w-6 text-gray-700" />
 										</div>
 										<div>
-											<h3 className="font-medium text-gray-900">Templates</h3>
+											<h3 className="font-medium text-gray-900">
+												<Link
+													href="/product/templates"
+													className="hover:text-blue-600"
+												>
+													Templates
+												</Link>
+											</h3>
 											<p className="mt-1 text-sm text-gray-600">
 												Get started fast with hundreds of industry-optimized
 												templates.
@@ -595,7 +810,12 @@ const Navbar = () => {
 										</div>
 										<div>
 											<h3 className="font-medium text-gray-900">
-												Popups and sticky bars
+												<Link
+													href="/product/popups-sticky-bars"
+													className="hover:text-blue-600"
+												>
+													Popups and sticky bars
+												</Link>
 											</h3>
 											<p className="mt-1 text-sm text-gray-600">
 												Create popups and sticky bars that grab your
@@ -609,7 +829,14 @@ const Navbar = () => {
 											<Settings className="h-6 w-6 text-gray-700" />
 										</div>
 										<div>
-											<h3 className="font-medium text-gray-900">Features</h3>
+											<h3 className="font-medium text-gray-900">
+												<Link
+													href="/product/features"
+													className="hover:text-blue-600"
+												>
+													Features
+												</Link>
+											</h3>
 											<p className="mt-1 text-sm text-gray-600">
 												Discover everything you can do behind-the-scenes.
 											</p>
@@ -648,7 +875,11 @@ const Navbar = () => {
 
 					{/* Solutions Dropdown */}
 					{openDropdown === "solutions" && (
-						<div className="absolute left-0 right-0 mt-1 bg-white shadow-lg z-50 py-8 px-6 border-t border-gray-100 hidden lg:block">
+						<div
+							className="absolute left-0 right-0 mt-1 bg-white shadow-lg z-50 py-8 px-6 border-t border-gray-100 hidden lg:block"
+							onMouseEnter={() => handleMouseEnter("solutions")}
+							onMouseLeave={handleMouseLeave}
+						>
 							<div className="max-w-7xl mx-auto grid grid-cols-12 gap-8">
 								{/* By industry section */}
 								<div className="col-span-4">
@@ -802,7 +1033,11 @@ const Navbar = () => {
 
 					{/* Resources Dropdown */}
 					{openDropdown === "resources" && (
-						<div className="absolute left-0 right-0 mt-1 bg-white shadow-lg z-50 py-8 px-6 border-t border-gray-100 hidden lg:block">
+						<div
+							className="absolute left-0 right-0 mt-1 bg-white shadow-lg z-50 py-8 px-6 border-t border-gray-100 hidden lg:block"
+							onMouseEnter={() => handleMouseEnter("resources")}
+							onMouseLeave={handleMouseLeave}
+						>
 							<div className="max-w-7xl mx-auto grid grid-cols-12 gap-8">
 								{/* The essentials section */}
 								<div className="col-span-4">
